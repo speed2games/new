@@ -6,6 +6,8 @@ const savedc = localStorage.getItem('dbugc');
 const menuBtns = document.querySelectorAll('.menu-btn');
 const psBtns = document.querySelectorAll('.ps-btn');
 const plsbtn = document.querySelectorAll('.button-container button');
+const consoleDev = document.getElementById("console");
+
 
 var ps4fw
 
@@ -113,7 +115,12 @@ function CheckFW() {
     const fwVersion = match ? match[1] : "Unknown"; // Get the firmware version or default to "Unknown"
 
     if (
-      fwVersion === '9.00' || fwVersion === '9.03' || fwVersion === '9.60'
+      fwVersion === '9.00' || fwVersion === '9.03' || fwVersion === '9.60' ||
+      fwVersion === '7.00' || fwVersion === '7.01' || fwVersion === '7.02' ||
+      fwVersion === '7.50' || fwVersion === '7.51' || fwVersion === '7.55' ||
+      fwVersion === '8.00' || fwVersion === '8.01' || fwVersion === '8.03' ||
+      fwVersion === '8.50' || fwVersion === '8.52' || fwVersion === '9.04' ||
+      fwVersion === '9.50' || fwVersion === '9.51'
     ) {
       document.getElementById('PS4FW').textContent = `PS4 FW: ${fwVersion} | Compatible`;
       document.getElementById('PS4FW').style.color = 'green';
@@ -122,18 +129,6 @@ function CheckFW() {
       if (ps4fw === '903' || ps4fw === '960') {
         document.getElementById('gameb').style.display = 'none';
       }
-    } else if (
-      fwVersion === '7.00' || fwVersion === '7.01' || fwVersion === '7.02' ||
-      fwVersion === '7.50' || fwVersion === '7.51' || fwVersion === '7.55' ||
-      fwVersion === '8.00' || fwVersion === '8.01' || fwVersion === '8.03' ||
-      fwVersion === '8.50' || fwVersion === '8.52' || fwVersion === '9.04' ||
-      fwVersion === '9.50' || fwVersion === '9.51'
-    ) {
-      document.getElementById('PS4FW').textContent = `PS4 FW: ${fwVersion} | Semi-Compatible`;
-      document.getElementById('PS4FW').style.color = 'orange';
-      choosejb('HEN');
-      ps4fw = fwVersion.replace('.', '');
-      document.getElementById('linuxb').style.display = 'none';
     } else {
       document.getElementById('PS4FW').textContent = `PS4 FW: ${fwVersion || 'Unknown'} | Incompatible`;
       document.getElementById('PS4FW').style.color = 'red';
@@ -323,15 +318,13 @@ function loadajbsettings(){
   }
 
   if (ckbaj.checked) {
-    const console = document.getElementById("console");
     if (sessionStorage.getItem('jbsuccess')) {
-      console.append(`Aleardy jailbroken !\n`);
-      console.scrollTop = console.scrollHeight;
+      consoleDev.append(`Already jailbroken !\n`);
+      consoleDev.scrollTop = consoleDev.scrollHeight;
     } else {
       document.getElementById('jailbreak').style.display = 'none';
-      document.getElementById('loader').style.display = 'flex';
-      console.append(`Auto jailbreaking... Please wait for a few seconds.\n`);
-      console.scrollTop = console.scrollHeight;
+      consoleDev.append(`Auto jailbreaking... Please wait for a few seconds.\n`);
+      consoleDev.scrollTop = consoleDev.scrollHeight;
       setTimeout(() => {
         jailbreak();
       }, 3000);
@@ -367,32 +360,36 @@ function loadajbsettings(){
 
 async function jailbreak() {
   try {
-    document.getElementById('jailbreak').style.display = 'none';
-    document.getElementById('loader').style.display = 'flex';
-    const modules = await loadMultipleModules([
-      '../payloads/Jailbreak.js',
-      '../psfree/alert.mjs'
-    ]);
-    console.log("All modules are loaded!");
-    const JailbreakModule = modules[0];
-
-    if (localStorage.getItem('HEN')) {
-      if (JailbreakModule && typeof JailbreakModule.HEN === 'function') {
-          JailbreakModule.HEN();
-      } else {
-          console.error("HEN function not found in Jailbreak.js module");
-      }
-    } else if (localStorage.getItem('GoldHEN')) {
-      if (JailbreakModule && typeof JailbreakModule.GoldHEN === 'function') {
-          JailbreakModule.GoldHEN();
-      } else {
-          console.error("GoldHEN function not found in Jailbreak.js module");
-      }
+    if (sessionStorage.getItem('jbsuccess')) {
+      consoleDev.append(`Aleardy jailbroken !\n`);
+      consoleDev.scrollTop = consoleDev.scrollHeight;
     } else {
-      if (JailbreakModule && typeof JailbreakModule.GoldHEN === 'function') {
-          JailbreakModule.GoldHEN();
+      document.getElementById('jailbreak').style.display = 'none';
+      const modules = await loadMultipleModules([
+        '../payloads/Jailbreak.js',
+        '../psfree/alert.mjs'
+      ]);
+      console.log("All modules are loaded!");
+      const JailbreakModule = modules[0];
+
+      if (localStorage.getItem('HEN')) {
+        if (JailbreakModule && typeof JailbreakModule.HEN === 'function') {
+            JailbreakModule.HEN();
+        } else {
+            console.error("HEN function not found in Jailbreak.js module");
+        }
+      } else if (localStorage.getItem('GoldHEN')) {
+        if (JailbreakModule && typeof JailbreakModule.GoldHEN === 'function') {
+            JailbreakModule.GoldHEN();
+        } else {
+            console.error("GoldHEN function not found in Jailbreak.js module");
+        }
       } else {
-          console.error("GoldHEN function not found in Jailbreak.js module");
+        if (JailbreakModule && typeof JailbreakModule.GoldHEN === 'function') {
+            JailbreakModule.GoldHEN();
+        } else {
+            console.error("GoldHEN function not found in Jailbreak.js module");
+        }
       }
     }
   } catch (e) {
